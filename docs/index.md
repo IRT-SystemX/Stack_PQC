@@ -44,6 +44,7 @@ Additionally, the `tools` directory contains several utilities making use of Van
 | ---- | ------- | ------------ |
 | benchmark | Benchmarking security features, e.g. signing or validating a lot messages in a row | `BUILD_BENCHMARK` |
 | certify | Utility for generating and handling security certificates, authorization tickets etc. | `BUILD_CERTIFY` |
+| certify-pqc | Experimental utility for generating and validating ECC/FN-DSA V3 certificate chains | `BUILD_CERTIFY`, `VANETZA_WITH_PQC` |
 | socktap | Example application using most of the Vanetza stack operating on sockets, i.e. either Linux packet sockets or optionally Cohda LLC sockets | `BUILD_SOCKTAP` |
 
 
@@ -60,4 +61,3 @@ Meanwhile, Vanetza is used by many more parties and for more use cases than anti
 
 If you are using Vanetza, we would love to add your project to the list above.
 Please write an e-mail to [raphael@riebl.net](mailto:raphael@riebl.net) or open a pull request.
-
