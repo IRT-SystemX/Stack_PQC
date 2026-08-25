@@ -17,15 +17,38 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            build-essential cmake ninja-build \
+            build-essential cmake git ninja-build \
             libboost-date-time-dev libboost-program-options-dev \
             libboost-system-dev libcrypto++-dev libgeographiclib-dev \
             libssl-dev
+
+      - name: Cache liboqs
+        id: cache-liboqs
+        uses: actions/cache@v5
+        with:
+          path: ${{ runner.temp }}/liboqs-install
+          key: liboqs-0.16.0-falcon512-${{ runner.os }}-${{ runner.arch }}
+
+      - name: Build liboqs
+        if: steps.cache-liboqs.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 --branch 0.16.0 \
+            https://github.com/open-quantum-safe/liboqs.git \
+            "${RUNNER_TEMP}/liboqs"
+          cmake -S "${RUNNER_TEMP}/liboqs" -B "${RUNNER_TEMP}/liboqs-build" -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="${RUNNER_TEMP}/liboqs-install" \
+            -DBUILD_SHARED_LIBS=OFF \
+            -DOQS_BUILD_ONLY_LIB=ON \
+            -DOQS_MINIMAL_BUILD='SIG_falcon_512;SIG_falcon_padded_512'
+          cmake --build "${RUNNER_TEMP}/liboqs-build" --parallel 2
+          cmake --install "${RUNNER_TEMP}/liboqs-build"
 
       - name: Configure
         run: >
           cmake -S . -B build-hybrid-pqc -G Ninja
           -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_PREFIX_PATH="${RUNNER_TEMP}/liboqs-install"
           -DCMAKE_CXX_STANDARD=14
           -DCMAKE_CXX_STANDARD_REQUIRED=ON
           -DCMAKE_CXX_EXTENSIONS=OFF

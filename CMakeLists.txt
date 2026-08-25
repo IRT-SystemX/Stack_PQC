@@ -35,7 +35,10 @@ vanetza_optional_dependency(CapnProto 0.8 VANETZA_WITH_RPC "Enable RPC support")
 vanetza_optional_dependency(CryptoPP 5.6.1 VANETZA_WITH_CRYPTOPP "Enable Crypto++ support")
 vanetza_optional_dependency(OpenSSL 1.1.1 VANETZA_WITH_OPENSSL "Enable OpenSSL extensions")
 
-option(VANETZA_WITH_PQC "Enable the experimental hybrid-PQC ASN.1 profile" OFF)
+option(VANETZA_WITH_PQC "Enable the experimental hybrid-PQC certificate profile" OFF)
+if(VANETZA_WITH_PQC)
+  find_package(liboqs 0.14 CONFIG REQUIRED)
+endif()
 
 option(VANETZA_EMBED_COUNTRY_DATA "Embed country boundary data into geodesy library" OFF)
 
@@ -123,6 +126,9 @@ file(GLOB_RECURSE _vanetza_headers
     CONFIGURE_DEPENDS
     vanetza/*.hpp)
 list(FILTER _vanetza_headers EXCLUDE REGEX "/tests/")
+if(NOT VANETZA_WITH_PQC)
+  list(FILTER _vanetza_headers EXCLUDE REGEX "vanetza/security/pqc/")
+endif()
 foreach(_header IN LISTS _vanetza_headers)
     get_filename_component(_dir ${_header} DIRECTORY)
     install(FILES ${_header}

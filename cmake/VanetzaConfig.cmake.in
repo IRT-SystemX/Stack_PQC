@@ -25,6 +25,10 @@ if(@VANETZA_WITH_OPENSSL@)
     find_dependency(OpenSSL ${OpenSSL_VERSION_WITHOUT_PATCH})
 endif()
 
+if(@VANETZA_WITH_PQC@)
+    find_dependency(liboqs 0.14 CONFIG)
+endif()
+
 # Restore previous module path
 set(CMAKE_MODULE_PATH ${_vanetza_save_cmake_module_path})
 unset(_vanetza_save_cmake_module_path)
